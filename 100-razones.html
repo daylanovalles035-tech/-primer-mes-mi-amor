@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>100 razones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black: #000000;
+  --near-black: #050505;
+  --carbon: #0e0e0e;
+  --carbon-2: #161616;
+  --wine: #5c0f18;
+  --wine-bright: #9c1c29;
+  --wine-glow: rgba(156,28,41,0.35);
+  --white: #f2efe9;
+  --silver: #b9b6b0;
+  --muted: #6f6c68;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Inter', -apple-system, sans-serif;
+}
+
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+html{ background:var(--black); }
+
+body{
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--sans);
+  overflow-x: hidden;
+  cursor: default;
+}
+
+body.locked{ overflow:hidden; height:100vh; }
+
+::selection{ background: var(--wine-bright); color: var(--white); }
+
+/* ===================== FONDO / TEXTURA ===================== */
+
+#particles{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+}
+
+.grain{
+  position:fixed;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  opacity:0.05;
+  mix-blend-mode:overlay;
+  background-image:
+    repeating-radial-gradient(circle at 20% 30%, rgba(255,255,255,0.4) 0, transparent 1px),
+    repeating-radial-gradient(circle at 70% 60%, rgba(255,255,255,0.3) 0, transparent 1px);
+  background-size: 3px 3px, 4px 4px;
+  animation: grainShift 1.4s steps(4) infinite;
+}
+
+@keyframes grainShift{
+  0%{ transform:translate(0,0); }
+  25%{ transform:translate(-1px,1px); }
+  50%{ transform:translate(1px,-1px); }
+  75%{ transform:translate(-1px,-1px); }
+  100%{ transform:translate(0,0); }
+}
+
+.vignette{
+  position:fixed;
+  inset:0;
+  z-index:3;
+  pointer-events:none;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.75) 100%);
+}
+
+/* ===================== AUDIO TOGGLE ===================== */
+
+#musicLinks{
+  position:fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 50;
+  display:flex;
+  flex-direction:column;
+  gap: 8px;
+  align-items:flex-end;
+}
+
+.music-link{
+  background: rgba(10,10,10,0.55);
+  border: 1px solid rgba(185,182,176,0.25);
+  color: var(--silver);
+  font-family: var(--sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-decoration:none;
+  padding: 9px 14px;
+  border-radius: 999px;
+  display:flex;
+  align-items:center;
+  gap: 8px;
+  cursor:pointer;
+  backdrop-filter: blur(6px);
+  transition: border-color 0.4s ease, color 0.4s ease, background 0.4s ease;
+  white-space:nowrap;
+}
+
+.music-link:hover{
+  border-color: var(--wine-bright);
+  color: var(--white);
+  background: rgba(92,15,24,0.3);
+}
+
+.audio-icon{ font-size:0.85rem; color: var(--wine-bright); }
+
+/* ===================== PROGRESS BAR ===================== */
+
+#progressBar{
+  position:fixed;
+  top:0; left:0;
+  width:100%;
+  height:2px;
+  background: rgba(255,255,255,0.06);
+  z-index: 60;
+}
+#progressFill{
+  height:100%;
+  width:0%;
+  background: linear-gradient(90deg, var(--wine), var(--wine-bright));
+  box-shadow: 0 0 10px var(--wine-glow);
+}
+
+/* ===================== ESTRUCTURA GENERAL ===================== */
+
+.chapter{
+  position:relative;
+  z-index:4;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding: 8vh 6vw;
+  text-align:center;
+}
+
+.pin-wrap{
+  position:relative;
+  z-index:4;
+  height: 400vh;
+}
+#twistWrap{ height: 500vh; }
+#finalWrap{ height: 450vh; }
+
+.pin-stage{
+  position: sticky;
+  top:0;
+  height:100vh;
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  text-align:center;
+  padding: 0 6vw;
+}
+
+/* ===================== INTRO ===================== */
+
+.intro-chapter{ position:relative; }
+
+.intro-inner{ position:relative; }
+
+.intro-line{
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight:300;
+  font-size: clamp(1.4rem, 3.4vw, 2.2rem);
+  color: var(--silver);
+  opacity:0;
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform: translate(-50%,-50%);
+  white-space:nowrap;
+}
+
+.intro-title{
+  font-family: var(--serif);
+  font-weight:600;
+  font-size: clamp(2.6rem, 8vw, 6.4rem);
+  line-height:1.05;
+  letter-spacing: 0.02em;
+  opacity:0;
+  color: var(--white);
+}
+
+.intro-title span{
+  display:block;
+  font-size: 0.4em;
+  font-weight:400;
+  font-style:italic;
+  color: var(--silver);
+  margin-top: 0.6rem;
+  letter-spacing: 0.05em;
+}
+
+.scroll-cue{
+  position:absolute;
+  bottom: 6vh;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap: 10px;
+  opacity:0;
+  color: var(--muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.35em;
+  text-transform:uppercase;
+}
+
+.scroll-cue i{
+  width:1px;
+  height: 36px;
+  background: linear-gradient(var(--muted), transparent);
+  display:block;
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+@keyframes scrollPulse{
+  0%,100%{ opacity:0.3; transform:scaleY(0.7); }
+  50%{ opacity:1; transform:scaleY(1); }
+}
+
+/* ===================== UN MES ===================== */
+
+.anniversary-chapter{
+  max-width: 720px;
+  margin: 0 auto;
+  padding-top: 14vh;
+  padding-bottom: 14vh;
+}
+
+.anniversary-badge{
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--wine-bright);
+  border: 1px solid rgba(156,28,41,0.4);
+  border-radius: 999px;
+  padding: 8px 22px;
+  margin-bottom: 3.2rem;
+  opacity:0;
+  transform: translateY(10px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+.anniversary-badge.visible{ opacity:1; transform:translateY(0); }
+
+.anniversary-text p{
+  font-family: var(--serif);
+  font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+  line-height: 1.85;
+  color: var(--silver);
+  margin-bottom: 1.7rem;
+  opacity:0;
+  transform: translateY(20px);
+  filter: blur(3px);
+  transition: opacity 1.1s ease, transform 1.1s ease, filter 1.1s ease;
+}
+
+.anniversary-text p.visible{
+  opacity:1;
+  transform: translateY(0);
+  filter: blur(0);
+  color: var(--white);
+}
+
+.anniversary-text p:first-child{
+  font-style: italic;
+  font-size: clamp(1.5rem, 3.2vw, 2.1rem);
+  color: var(--white);
+}
+
+.anniversary-close{
+  margin-top: 2.2rem;
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(1.4rem, 3vw, 1.9rem) !important;
+  color: var(--wine-bright) !important;
+  text-shadow: 0 0 30px var(--wine-glow);
+}
+
+/* ===================== 5 RAZONES ===================== */
+
+.panel-count{
+  font-family: var(--serif);
+  font-size: clamp(4rem, 12vw, 9rem);
+  font-weight:300;
+  color: var(--wine-bright);
+  opacity:0;
+  position:absolute;
+  top: 14%;
+  left:50%;
+  transform: translate(-50%,0);
+  filter: blur(6px);
+}
+
+.panel-text{
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(1.6rem, 4.4vw, 3rem);
+  max-width: 18ch;
+  color: var(--white);
+  opacity:0;
+  filter: blur(10px);
+  transform: scale(0.94);
+  line-height:1.35;
+}
+
+/* ===================== GIRO 5 -> 100 ===================== */
+
+.twist-line{
+  font-family: var(--serif);
+  font-weight:400;
+  font-size: clamp(1.6rem, 4.2vw, 2.8rem);
+  color: var(--silver);
+  opacity:0;
+  position:absolute;
+}
+
+.twist-sub{
+  font-family: var(--serif);
+  font-weight:600;
+  font-size: clamp(1.8rem, 5vw, 3.2rem);
+  color: var(--white);
+  letter-spacing:0.03em;
+}
+
+.twist-sub2{
+  font-family: var(--serif);
+  font-style:italic;
+  font-weight:300;
+  font-size: clamp(1.1rem, 2.6vw, 1.6rem);
+  color: var(--muted);
+}
+
+#numberBurst{
+  position:absolute;
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+#bigFive, #bigThreeHundred{
+  position:absolute;
+  font-family: var(--serif);
+  font-weight:600;
+  font-size: clamp(6rem, 26vw, 20rem);
+  line-height:1;
+  color: var(--white);
+  opacity:0;
+  text-shadow: 0 0 60px var(--wine-glow);
+}
+
+.burst-particle{
+  position:absolute;
+  width:5px; height:5px;
+  border-radius:50%;
+  background: var(--wine-bright);
+  box-shadow: 0 0 8px var(--wine-glow);
+  opacity:0;
+  pointer-events:none;
+}
+
+.twist-final{
+  font-family: var(--serif);
+  font-weight:600;
+  font-size: clamp(2.2rem, 6.5vw, 4.6rem);
+  line-height:1.1;
+  color: var(--white);
+  opacity:0;
+  letter-spacing:0.01em;
+}
+
+/* ===================== 100 RAZONES ===================== */
+
+.reasons-chapter{
+  min-height:auto;
+  padding-top: 14vh;
+  padding-bottom: 10vh;
+  transition: background 1.2s ease;
+}
+
+.reasons-header{ margin-bottom: 6vh; }
+
+.reasons-eyebrow{
+  display:block;
+  font-size:0.72rem;
+  letter-spacing:0.4em;
+  text-transform:uppercase;
+  color: var(--wine-bright);
+  margin-bottom: 1.2rem;
+}
+
+.reasons-header h2{
+  font-family: var(--serif);
+  font-weight:600;
+  font-size: clamp(2.2rem, 6vw, 4rem);
+  color: var(--white);
+}
+
+.reasons-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 1.4rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.reason-card{
+  position:relative;
+  text-align:left;
+  padding: 1.7rem 1.5rem;
+  border-radius: 14px;
+  border: 1px solid rgba(185,182,176,0.1);
+  background: linear-gradient(160deg, rgba(92,15,24,0.08), rgba(255,255,255,0.015));
+  backdrop-filter: blur(4px);
+  opacity:0;
+  transform: translateY(26px);
+  transition: opacity 0.9s ease, transform 0.9s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+}
+
+.reason-card.visible{
+  opacity:1;
+  transform: translateY(0);
+}
+
+.reason-card:hover{
+  border-color: rgba(156,28,41,0.55);
+  box-shadow: 0 0 30px rgba(92,15,24,0.25);
+}
+
+.reason-index{
+  display:block;
+  font-family: var(--serif);
+  font-size:0.85rem;
+  letter-spacing:0.25em;
+  color: var(--wine-bright);
+  margin-bottom: 0.7rem;
+}
+
+.reason-text{
+  font-family: var(--serif);
+  font-size: 1.18rem;
+  line-height:1.55;
+  color: var(--white);
+}
+
+/* tarjetas "feature" más grandes cada cierto intervalo */
+.reason-card.feature{
+  grid-column: span 2;
+  padding: 2.4rem 2.2rem;
+  background: linear-gradient(160deg, rgba(156,28,41,0.14), rgba(255,255,255,0.02));
+}
+.reason-card.feature .reason-text{
+  font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+  font-style: italic;
+}
+
+@media (max-width: 640px){
+  .reason-card.feature{ grid-column: span 1; }
+}
+
+/* atmosfera intima despues de la razon ~200 */
+.reasons-chapter.intimate{
+  background: radial-gradient(ellipse at 50% 20%, rgba(10,4,5,0.4), transparent 70%);
+}
+.reasons-chapter.intimate .reason-card{
+  border-color: rgba(185,182,176,0.06);
+}
+.reasons-chapter.intimate .reason-card:hover{
+  box-shadow: 0 0 18px rgba(92,15,24,0.15);
+}
+
+/* ultimas 10 - bloque especial */
+.reason-card.finale{
+  grid-column: 1 / -1;
+  text-align:center;
+  padding: 3.2rem 1.5rem;
+  background: transparent;
+  border: none;
+}
+.reason-card.finale .reason-index{
+  font-size: clamp(2.4rem, 7vw, 5rem);
+  color: var(--wine-bright);
+  letter-spacing:0.1em;
+  margin-bottom:1rem;
+  filter: blur(0);
+}
+.reason-card.finale .reason-text{
+  font-size: clamp(1.5rem, 3.4vw, 2.4rem);
+  max-width: 24ch;
+  margin: 0 auto;
+  font-style: italic;
+}
+
+.almost-marker{
+  grid-column: 1/-1;
+  text-align:center;
+  font-family: var(--serif);
+  font-style:italic;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  color: var(--muted);
+  padding: 4rem 0 2rem;
+  opacity:0;
+  transform: translateY(16px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+.almost-marker.visible{ opacity:1; transform:translateY(0); }
+
+/* ===================== CARTA ===================== */
+
+.letter-chapter{
+  max-width: 760px;
+  margin: 0 auto;
+  padding-top: 16vh;
+  padding-bottom: 18vh;
+}
+
+.letter-eyebrow{
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--wine-bright);
+  font-size: 1.1rem;
+  margin-bottom: 3rem;
+  opacity:0;
+  transform: translateY(14px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+.letter-eyebrow.visible{ opacity:1; transform:translateY(0); }
+
+.letter-text p{
+  font-family: var(--serif);
+  font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+  line-height: 1.85;
+  color: var(--silver);
+  margin-bottom: 1.8rem;
+  opacity:0;
+  transform: translateY(20px);
+  filter: blur(3px);
+  transition: opacity 1.1s ease, transform 1.1s ease, filter 1.1s ease;
+}
+
+.letter-text p.visible{
+  opacity:1;
+  transform: translateY(0);
+  filter: blur(0);
+  color: var(--white);
+}
+
+/* ===================== CIERRE FINAL ===================== */
+
+.final-line{
+  font-family: var(--serif);
+  font-weight:500;
+  font-size: clamp(1.8rem, 5vw, 3.2rem);
+  color: var(--white);
+  position:absolute;
+  opacity:0;
+  max-width: 22ch;
+  line-height:1.3;
+}
+
+.final-apology{
+  font-style: italic;
+  font-weight:300;
+  color: var(--silver);
+  font-size: clamp(1.4rem, 3.6vw, 2.2rem);
+}
+
+.final-thanks{
+  font-weight:300;
+  font-size: clamp(1.3rem, 3vw, 2rem);
+  color: var(--silver);
+}
+
+.final-love{
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight:600;
+  color: var(--wine-bright);
+  font-size: clamp(2.2rem, 6vw, 3.6rem);
+  text-shadow: 0 0 40px var(--wine-glow);
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+@media (max-width: 640px){
+  #musicLinks{ top:14px; right:14px; }
+  .music-link{ padding:7px 11px; font-size:0.62rem; }
+  .reasons-grid{ grid-template-columns: 1fr; }
+  .reason-card.feature{ grid-column: span 1; }
+  .pin-wrap{ height: 350vh; }
+  #twistWrap{ height: 420vh; }
+  #finalWrap{ height: 380vh; }
+}
+
+</style>
+</head>
+<body class="locked">
+
+<canvas id="particles"></canvas>
+<div class="grain"></div>
+<div class="vignette"></div>
+
+<div id="musicLinks">
+  <a class="music-link" href="https://open.spotify.com/intl-es/track/6r6IPuFvUX72kQGc9b46rk" target="_blank" rel="noopener">
+    <span class="audio-icon">♫</span> Amor — Emanuel Cortés
+  </a>
+  <a class="music-link" href="https://open.spotify.com/intl-es/track/0j5ocCGz4i7q0aPD1gNZ6H" target="_blank" rel="noopener">
+    <span class="audio-icon">♫</span> La Calma — Gonzy
+  </a>
+</div>
+
+<div id="progressBar"><div id="progressFill"></div></div>
+
+<!-- ================= INTRO ================= -->
+<section id="intro" class="chapter intro-chapter">
+  <div class="intro-inner">
+    <p class="intro-line" id="introLine1">Esto es para ti.</p>
+    <p class="intro-line" id="introLine2">Pero antes&hellip;</p>
+    <h1 class="intro-title" id="introTitle">5 RAZONES<br><span>POR LAS QUE TE AMO.</span></h1>
+  </div>
+  <div class="scroll-cue" id="scrollCue">
+    <span>desliza</span>
+    <i></i>
+  </div>
+</section>
+
+<!-- ================= UN MES ================= -->
+<section id="anniversary" class="chapter anniversary-chapter">
+  <div class="anniversary-badge" id="annBadge">01 MES</div>
+  <div class="anniversary-text" id="anniversaryText">
+    <p>Hola mi niña hermosa.</p>
+    <p>Soy tu razón de enojos favorita.</p>
+    <p>Quería darte las gracias por no fallar en ser la mejor novia del mundo.</p>
+    <p>Sé que tenemos apenas un mes, pero quiero decirte que eres lo que realmente quiero en mi vida. No sé si soy lo que buscas, pero tengo algo muy claro: te amo muchísimo, y eso no va a cambiar.</p>
+    <p>Le rezo a Dios todos los días por seguir teniéndote en mi vida, aunque sea a través de una pantalla.</p>
+    <p>Contigo supe que no necesito olerte, abrazarte o sentir tu cuerpo para poder amarte. Quiero amarte con mi corazón y con mi alma.</p>
+    <p>Sé también que tengo mis errores, pero quiero arreglar cada uno de ellos contigo, aunque me cueste mucho y caiga muchas veces.</p>
+    <p>Quiero cuidarte hasta el final de mis días.</p>
+    <p class="anniversary-close">Y quiero que sepas que te amo mucho, mi razón de vivir y de existir. Mi Karol G de Anuel. Mi niña hermosa.</p>
+  </div>
+</section>
+
+<!-- ================= 5 RAZONES ================= -->
+<section id="fiveWrap" class="pin-wrap">
+  <div class="pin-stage" id="fiveStage">
+    <div class="panel-count" id="fiveNumber">01</div>
+    <p class="panel-text" id="fiveText"></p>
+  </div>
+</section>
+
+<!-- ================= GIRO 5 -> 100 ================= -->
+<section id="twistWrap" class="pin-wrap">
+  <div class="pin-stage" id="twistStage">
+    <p class="twist-line" id="twistLine1">Bueno&hellip;</p>
+    <p class="twist-line" id="twistLine2">Esas eran 5.</p>
+    <p class="twist-line" id="twistLine3">Pero&hellip;</p>
+
+    <div id="numberBurst">
+      <span id="bigFive">5</span>
+      <span id="bigThreeHundred">100</span>
+    </div>
+
+    <p class="twist-line twist-sub" id="twistSub1">5 NO SON SUFICIENTES.</p>
+    <p class="twist-line twist-sub2" id="twistSub2">Así que hice algo un poquito más serio&hellip;</p>
+    <h2 class="twist-final" id="twistFinal">100 RAZONES<br>POR LAS QUE TE AMO.</h2>
+  </div>
+</section>
+
+<!-- ================= 100 RAZONES ================= -->
+<section id="reasons" class="chapter reasons-chapter">
+  <div class="reasons-header">
+    <span class="reasons-eyebrow">cada una es real</span>
+    <h2>100 razones</h2>
+  </div>
+  <div class="reasons-grid" id="reasonsGrid"></div>
+</section>
+
+<!-- ================= CARTA FINAL ================= -->
+<section id="letter" class="chapter letter-chapter">
+  <div class="letter-eyebrow">y ahora que llegué a 100&hellip;</div>
+  <div class="letter-text" id="letterText">
+    <p>Me di cuenta de algo.</p>
+    <p>De que ninguna de estas cien razones alcanza para pagar todas las veces que pude haberte dado más — más tiempo, más paciencia, más presencia — y no lo hice.</p>
+    <p>Ha habido días en los que no estuve a la altura de lo que tú sí has sido conmigo. Días en los que te di lo que me sobraba, en vez de darte lo mejor que tengo. Y tú, aun así, te quedaste.</p>
+    <p>No quiero prometerte que voy a ser perfecto, porque sería otra promesa vacía. Pero sí quiero decirte que te veo. Veo lo mucho que das sin pedir nada a cambio, lo fuerte que eres incluso cuando nadie te lo agradece, y lo mucho que mereces a alguien que se esfuerce por merecerte de verdad.</p>
+    <p>Quiero ser esa persona. No de palabra — de acción, todos los días, aunque me tome tiempo aprender a hacerlo bien.</p>
+    <p>Gracias por quedarte en los días en que no fui suficiente. Gracias por enseñarme, sin proponértelo, la clase de persona que quiero llegar a ser.</p>
+  </div>
+</section>
+
+<!-- ================= CIERRE ================= -->
+<section id="finalWrap" class="pin-wrap">
+  <div class="pin-stage" id="finalStage">
+    <p class="final-line" id="finalLine1">100 razones para amarte.</p>
+    <p class="final-line" id="finalLine2">Y todavía me faltan.</p>
+    <p class="final-line final-apology" id="finalLine3">Perdón por no ser ni siquiera un poco de lo que eres tú.</p>
+    <p class="final-line final-thanks" id="finalLine4">Pero gracias por enseñarme todos los días la persona que quiero llegar a ser.</p>
+    <p class="final-line final-love" id="finalLine5">Te amo.</p>
+  </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+// 100 razones — tal como las escribiste, en orden.
+const REASONS = [
+"Porque haces que mis días sean más bonitos.",
+"Porque tu sonrisa ilumina cualquier momento.",
+"Porque me haces sentir especial.",
+"Porque contigo puedo ser yo mismo.",
+"Porque sabes cómo hacerme reír.",
+"Porque me escuchas de verdad.",
+"Porque me apoyas cuando más lo necesito.",
+"Porque confías en mí.",
+"Porque me das paz.",
+"Porque tu abrazo se siente como hogar.",
+"Porque me encanta tu forma de mirar.",
+"Porque haces que lo cotidiano sea especial.",
+"Porque celebras mis logros.",
+"Porque permaneces a mi lado en los momentos difíciles.",
+"Porque conoces mis defectos y aun así me quieres.",
+"Porque me inspiras a ser mejor.",
+"Porque respetas mis sentimientos.",
+"Porque puedo contarte cualquier cosa.",
+"Porque contigo nunca me siento solo.",
+"Porque tu voz me tranquiliza.",
+"Porque me encanta hablar contigo durante horas.",
+"Porque incluso tus silencios me hacen compañía.",
+"Porque tienes un corazón hermoso.",
+"Porque eres genuino.",
+"Porque me haces sentir querido.",
+"Porque tus pequeños detalles significan muchísimo.",
+"Porque recuerdas cosas que para mí son importantes.",
+"Porque sabes cuándo necesito un abrazo.",
+"Porque me haces sonreír sin intentarlo.",
+"Porque haces que quiera compartir contigo mis mejores momentos.",
+"Porque también quiero compartir contigo los peores.",
+"Porque me aceptas como soy.",
+"Porque me motivas cuando pierdo las ganas.",
+"Porque me haces sentir orgulloso de tenerte en mi vida.",
+"Porque tu felicidad también me importa.",
+"Porque me encanta tu manera de pensar.",
+"Porque admiro tu fortaleza.",
+"Porque admiro tu sensibilidad.",
+"Porque eres único.",
+"Porque nadie me hace sentir como tú.",
+"Porque contigo puedo hablar de mis sueños.",
+"Porque me haces creer en el amor.",
+"Porque haces que mi corazón se acelere.",
+"Porque extraño tu presencia cuando no estás.",
+"Porque siempre encuentro una razón para pensar en ti.",
+"Porque tus mensajes pueden cambiar mi día.",
+"Porque me encanta cuando dices mi nombre.",
+"Porque tus abrazos son mis favoritos.",
+"Porque me encanta verte feliz.",
+"Porque quiero verte cumplir tus sueños.",
+"Porque me encanta compartir recuerdos contigo.",
+"Porque cada momento contigo se vuelve un recuerdo especial.",
+"Porque me haces sentir seguro.",
+"Porque eres mi persona favorita para contarle las cosas.",
+"Porque puedo confiar en ti.",
+"Porque sabes cómo levantarme el ánimo.",
+"Porque me haces sentir importante.",
+"Porque respetas mis límites.",
+"Porque valoras quién soy.",
+"Porque me haces sentir suficiente.",
+"Porque contigo puedo reírme de cualquier tontería.",
+"Porque nuestras conversaciones nunca dejan de sorprenderme.",
+"Porque me encanta tu sentido del humor.",
+"Porque admiro tu manera de tratar a los demás.",
+"Porque tienes una forma especial de hacerme sentir amado.",
+"Porque me haces querer construir recuerdos nuevos.",
+"Porque contigo hasta un día normal puede ser increíble.",
+"Porque me das razones para sonreír.",
+"Porque me haces sentir afortunado.",
+"Porque me encanta tu manera de querer.",
+"Porque eres paciente conmigo.",
+"Porque sabes perdonar.",
+"Porque intentas entenderme.",
+"Porque no huyes cuando las cosas se complican.",
+"Porque haces que el futuro parezca más bonito.",
+"Porque me encanta imaginar aventuras contigo.",
+"Porque quiero estar presente en tus momentos importantes.",
+"Porque quiero cuidarte.",
+"Porque quiero verte crecer.",
+"Porque me importa lo que sientes.",
+"Porque me importa lo que sueñas.",
+"Porque tu felicidad me hace feliz.",
+"Porque tu tristeza me importa.",
+"Porque eres parte de mis pensamientos más bonitos.",
+"Porque haces que mi mundo tenga un poquito más de color.",
+"Porque contigo he aprendido cosas nuevas sobre el amor.",
+"Porque me enseñas que amar también es cuidar.",
+"Porque me haces sentir comprendido.",
+"Porque me encanta descubrir nuevas cosas de ti.",
+"Porque cada día encuentro algo nuevo que admirar en ti.",
+"Porque haces que mi corazón se sienta en casa.",
+"Porque eres alguien que quiero conservar en mi vida.",
+"Porque contigo quiero crear miles de recuerdos.",
+"Porque no necesito fingir cuando estoy contigo.",
+"Porque me haces sentir visto.",
+"Porque me haces sentir escuchado.",
+"Porque me haces sentir elegido.",
+"Porque simplemente eres tú.",
+"Porque entre tantas personas, mi corazón te eligió a ti.",
+"Porque te amo, y a veces ninguna lista de razones alcanza para explicar todo lo que siento por ti. ❤️"
+];
+
+
+/* ============================================================
+   100 razones — orquestación completa de la experiencia
+   ============================================================ */
+
+gsap.registerPlugin(ScrollTrigger);
+
+const REDUCE_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------------------------------------------------------
+   1. PARTÍCULAS DE FONDO (polvo cinematográfico + parallax)
+--------------------------------------------------------- */
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let w, h;
+function resizeCanvas(){ w = canvas.width = innerWidth; h = canvas.height = innerHeight; }
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+let pointer = { x: 0.5, y: 0.5 };
+let smoothPointer = { x: 0.5, y: 0.5 };
+
+function setPointer(x, y){ pointer.x = x / w; pointer.y = y / h; }
+window.addEventListener('mousemove', e => setPointer(e.clientX, e.clientY));
+window.addEventListener('touchmove', e => {
+  if(e.touches && e.touches[0]) setPointer(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive:true });
+
+const DUST_COUNT = 140;
+const dust = [];
+for(let i=0;i<DUST_COUNT;i++){
+  dust.push({
+    x: Math.random()*w,
+    y: Math.random()*h,
+    r: Math.random()*1.4 + 0.3,
+    baseAlpha: Math.random()*0.35 + 0.08,
+    speedY: Math.random()*0.12 + 0.02,
+    phase: Math.random()*Math.PI*2,
+    twinkle: Math.random()*0.02 + 0.006,
+    hue: Math.random() < 0.14 ? 350 : 40 // en su mayoría blancuzcas, algunas con tinte vino
+  });
+}
+
+let particleDensity = 1; // se reduce en la atmósfera íntima
+let lastT = performance.now();
+
+function drawParticles(now){
+  const dt = now - lastT;
+  lastT = now;
+
+  smoothPointer.x += (pointer.x - smoothPointer.x) * 0.05;
+  smoothPointer.y += (pointer.y - smoothPointer.y) * 0.05;
+
+  ctx.clearRect(0,0,w,h);
+
+  const offsetX = (smoothPointer.x - 0.5) * 40;
+  const offsetY = (smoothPointer.y - 0.5) * 30;
+
+  for(const p of dust){
+    p.y -= p.speedY * (dt*0.06);
+    if(p.y < -10){ p.y = h + 10; p.x = Math.random()*w; }
+    p.phase += p.twinkle * (dt*0.06);
+    const alpha = (p.baseAlpha + Math.sin(p.phase) * 0.12) * particleDensity;
+    if(alpha <= 0) continue;
+    const x = p.x + offsetX * (p.r/1.8);
+    const y = p.y + offsetY * (p.r/1.8);
+    ctx.beginPath();
+    ctx.fillStyle = p.hue === 350
+      ? `rgba(156,28,41,${Math.max(0,alpha)})`
+      : `rgba(242,239,233,${Math.max(0,alpha*0.5)})`;
+    ctx.arc(x, y, p.r, 0, Math.PI*2);
+    ctx.fill();
+  }
+  requestAnimationFrame(drawParticles);
+}
+requestAnimationFrame(drawParticles);
+
+/* ---------------------------------------------------------
+   2. MÚSICA — enlaces directos a Spotify (ver #musicLinks en el HTML)
+--------------------------------------------------------- */
+
+/* ---------------------------------------------------------
+   3. BARRA DE PROGRESO
+--------------------------------------------------------- */
+ScrollTrigger.create({
+  trigger: document.body,
+  start: 'top top',
+  end: 'bottom bottom',
+  onUpdate: self => {
+    document.getElementById('progressFill').style.width = (self.progress*100) + '%';
+  }
+});
+
+/* ---------------------------------------------------------
+   4. INTRO
+--------------------------------------------------------- */
+const introTl = gsap.timeline({
+  defaults: { ease: 'power2.out' },
+  onComplete: () => {
+    document.body.classList.remove('locked');
+    gsap.to('#scrollCue', { opacity:1, duration:1 });
+  }
+});
+
+introTl
+  .to('#introLine1', { opacity:1, duration:1.4 }, 0.3)
+  .to('#introLine1', { opacity:0, duration:1, filter:'blur(6px)' }, 2.3)
+  .to('#introLine2', { opacity:1, duration:1.4 }, 3.0)
+  .to('#introLine2', { opacity:0, duration:1, filter:'blur(6px)' }, 5.0)
+  .fromTo('#introTitle',
+      { opacity:0, scale:1.15, filter:'blur(18px)' },
+      { opacity:1, scale:1, filter:'blur(0px)', duration:2.4 },
+      5.6);
+
+/* ---------------------------------------------------------
+   4b. UN MES — carta de aniversario
+--------------------------------------------------------- */
+const annObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('#annBadge, .anniversary-text p').forEach(el => annObserver.observe(el));
+
+/* ---------------------------------------------------------
+   5. LAS 5 RAZONES (sección fija con scroll-scrub)
+--------------------------------------------------------- */
+const FIVE_REASONS = [
+  "Porque haces que mis días tengan sentido, incluso los más comunes.",
+  "Porque tu forma de amar no le pide permiso a nadie, y me eligió a mí.",
+  "Porque a tu lado dejé de sentirme solo, sin que tuvieras que esforzarte por lograrlo.",
+  "Porque me sostienes en silencio, en los días donde ni yo sé pedir ayuda.",
+  "Porque simplemente… eres tú, y eso ya es razón suficiente para amarte."
+];
+
+const fiveNumberEl = document.getElementById('fiveNumber');
+const fiveTextEl = document.getElementById('fiveText');
+
+const fiveTl = gsap.timeline({
+  scrollTrigger: {
+    trigger: '#fiveWrap',
+    start: 'top top',
+    end: 'bottom bottom',
+    scrub: 0.6,
+    pin: '#fiveStage'
+  }
+});
+
+FIVE_REASONS.forEach((text, i) => {
+  const segment = fiveTl;
+  segment.call(() => {
+    fiveNumberEl.textContent = String(i+1).padStart(2,'0');
+    fiveTextEl.textContent = text;
+  })
+  .fromTo([fiveNumberEl, fiveTextEl],
+    { opacity:0, filter:'blur(10px)', scale:0.94 },
+    { opacity:1, filter:'blur(0px)', scale:1, duration:1.2, stagger:0.08 })
+  .to([fiveNumberEl, fiveTextEl],
+    { opacity:0, filter:'blur(10px)', duration:1, delay:0.6 });
+});
+
+/* ---------------------------------------------------------
+   6. EL GIRO — 5 no son suficientes -> 300
+--------------------------------------------------------- */
+function spawnBurstParticles(container, count){
+  const rect = container.getBoundingClientRect();
+  const cx = rect.width/2, cy = rect.height/2;
+  const frag = document.createDocumentFragment();
+  const particles = [];
+  for(let i=0;i<count;i++){
+    const el = document.createElement('span');
+    el.className = 'burst-particle';
+    el.style.left = cx + 'px';
+    el.style.top = cy + 'px';
+    frag.appendChild(el);
+    particles.push(el);
+  }
+  container.appendChild(frag);
+  return particles;
+}
+
+const twistTl = gsap.timeline({
+  scrollTrigger: {
+    trigger: '#twistWrap',
+    start: 'top top',
+    end: 'bottom bottom',
+    scrub: 0.6,
+    pin: '#twistStage'
+  }
+});
+
+twistTl
+  .to('#twistLine1', { opacity:1, duration:1 }, 0.2)
+  .to('#twistLine1', { opacity:0, duration:0.8 }, 1.4)
+  .to('#twistLine2', { opacity:1, duration:1 }, 1.8)
+  .to('#twistLine2', { opacity:0, duration:0.8 }, 3.0)
+  .to('#twistLine3', { opacity:1, duration:1 }, 3.4)
+  .to('#twistLine3', { opacity:0, duration:0.8, filter:'blur(8px)' }, 4.6)
+  // el 5 aparece enorme
+  .fromTo('#bigFive', { opacity:0, scale:0.7 }, { opacity:1, scale:1, duration:1.2 }, 5.2)
+  .to('#bigFive', { scale:1.08, duration:0.6, repeat:1, yoyo:true }, 6.6)
+  // se "rompe" en partículas
+  .call(() => {
+    const stage = document.getElementById('numberBurst');
+    const particles = spawnBurstParticles(stage, 60);
+    gsap.to('#bigFive', { opacity:0, scale:1.4, filter:'blur(6px)', duration:0.8 });
+    gsap.to(particles, {
+      opacity: () => Math.random()*0.8+0.2,
+      x: () => (Math.random()-0.5) * 500,
+      y: () => (Math.random()-0.5) * 500,
+      duration: 1,
+      stagger: 0.004,
+      ease: 'power2.out',
+      onComplete: () => {
+        gsap.to(particles, { opacity:0, duration:0.6, onComplete:() => particles.forEach(p=>p.remove()) });
+      }
+    });
+  }, null, 7.4)
+  .fromTo('#bigThreeHundred',
+      { opacity:0, scale:0.5, filter:'blur(20px)' },
+      { opacity:1, scale:1, filter:'blur(0px)', duration:1.4 }, 8.0)
+  .to('#bigThreeHundred', { opacity:0, scale:1.3, filter:'blur(10px)', duration:1 }, 10.0)
+  .fromTo('#twistSub1', { opacity:0, letterSpacing:'0.3em' }, { opacity:1, letterSpacing:'0.03em', duration:1.2 }, 10.4)
+  .to('#twistSub1', { opacity:0, duration:0.8 }, 12.0)
+  .fromTo('#twistSub2', { opacity:0 }, { opacity:1, duration:1.2 }, 12.4)
+  .to('#twistSub2', { opacity:0, duration:0.8 }, 14.0)
+  .fromTo('#twistFinal', { opacity:0, scale:0.92, filter:'blur(12px)' }, { opacity:1, scale:1, filter:'blur(0px)', duration:1.6 }, 14.4)
+  .to('#twistFinal', { opacity:1, duration:1 }, 16.2);
+
+/* ---------------------------------------------------------
+   7. RENDER DE LAS 100 RAZONES
+--------------------------------------------------------- */
+const grid = document.getElementById('reasonsGrid');
+const reasonsChapter = document.querySelector('.reasons-chapter');
+const LAST_TEN_START = 91;
+
+REASONS.forEach((text, i) => {
+  const num = i + 1;
+
+  // marcador "Ya casi..." justo antes de la razón 291
+  if(num === LAST_TEN_START){
+    const marker = document.createElement('div');
+    marker.className = 'almost-marker';
+    marker.textContent = 'Ya casi…';
+    grid.appendChild(marker);
+  }
+
+  const card = document.createElement('div');
+  const isFinale = num >= LAST_TEN_START;
+  const isFeature = !isFinale && num % 10 === 0;
+
+  card.className = 'reason-card' + (isFinale ? ' finale' : '') + (isFeature ? ' feature' : '');
+  card.innerHTML = `<span class="reason-index">${String(num).padStart(3,'0')}</span><p class="reason-text">${text}</p>`;
+  grid.appendChild(card);
+});
+
+// revelado progresivo
+const cardObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reason-card, .almost-marker').forEach(el => cardObserver.observe(el));
+
+// cambio de atmósfera después de ~razón 200: más oscuro, menos partículas
+const atmosphereMarkerIndex = 65;
+const cards = document.querySelectorAll('.reason-card');
+if(cards[atmosphereMarkerIndex]){
+  const atmosphereObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        reasonsChapter.classList.add('intimate');
+        gsap.to({}, { duration:2, onUpdate: function(){
+          particleDensity = 1 - this.progress()*0.6;
+        }});
+      }
+    });
+  }, { threshold: 0 });
+  atmosphereObserver.observe(cards[atmosphereMarkerIndex]);
+}
+
+/* ---------------------------------------------------------
+   8. CARTA FINAL
+--------------------------------------------------------- */
+const letterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.letter-eyebrow, .letter-text p').forEach(el => letterObserver.observe(el));
+
+/* ---------------------------------------------------------
+   9. CIERRE
+--------------------------------------------------------- */
+const finalTl = gsap.timeline({
+  scrollTrigger: {
+    trigger: '#finalWrap',
+    start: 'top top',
+    end: 'bottom bottom',
+    scrub: 0.6,
+    pin: '#finalStage'
+  }
+});
+
+finalTl
+  .to('#finalLine1', { opacity:1, duration:1.2 }, 0.3)
+  .to('#finalLine1', { opacity:0, filter:'blur(8px)', duration:1 }, 2.3)
+  .to('#finalLine2', { opacity:1, duration:1.2 }, 2.8)
+  .to('#finalLine2', { opacity:0, filter:'blur(8px)', duration:1 }, 4.8)
+  .to('#finalLine3', { opacity:1, duration:1.4 }, 5.3)
+  .to('#finalLine3', { opacity:0, filter:'blur(8px)', duration:1 }, 7.8)
+  .to('#finalLine4', { opacity:1, duration:1.4 }, 8.3)
+  .to('#finalLine4', { opacity:0, filter:'blur(8px)', duration:1 }, 10.8)
+  .fromTo('#finalLine5', { opacity:0, scale:0.9 }, { opacity:1, scale:1, duration:1.6 }, 11.3)
+  .to('#finalLine5', { opacity:1, duration:1.5 }, 13.2);
+
+/* ---------------------------------------------------------
+   10. Ajustes de accesibilidad
+--------------------------------------------------------- */
+if(REDUCE_MOTION){
+  document.body.classList.remove('locked');
+  gsap.globalTimeline.timeScale(6); // acelera todas las animaciones drásticamente
+}
+
+</script>
+</body>
+</html>
