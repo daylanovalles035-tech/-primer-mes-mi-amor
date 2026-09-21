@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0704">
+<title>Para ti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Parisienne&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0b0704;
+    --ink:#171009;
+    --cream:#f7edd6;
+    --gold:#e7b23c;
+    --gold-light:#ffdd8a;
+    --gold-deep:#a9720f;
+    --stem:#3c7a37;
+    --stem-light:#5fa051;
+    color-scheme: dark;
+    box-sizing:border-box;
+  }
+  *,*::before,*::after{ box-sizing:inherit; }
+  html{ scroll-behavior:smooth; scroll-padding-top: env(safe-area-inset-top,0px); }
+  body{
+    margin:0; background:var(--black); color:var(--cream);
+    font-family:'Cormorant Garamond', Georgia, serif;
+    overflow-x:hidden;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  body.locked{ overflow:hidden; height:100%; }
+  h1,h2,.display{
+    font-family:'Playfair Display', Georgia, serif;
+    font-weight:500;
+    margin:0;
+  }
+  .script{ font-family:'Parisienne', cursive; font-weight:400; }
+  ::selection{ background:var(--gold); color:var(--black); }
+
+  /* ---------- capa de pétalos que cae en toda la página ---------- */
+  #petalLayer{
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+  }
+  #petalLayer canvas{ display:block; width:100%; height:100%; }
+
+  /* ---------- INTRO ---------- */
+  #intro{
+    position:fixed; inset:0; z-index:100; background:var(--black);
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+  }
+  #intro .glow{
+    position:absolute; width:70vmax; height:70vmax; border-radius:50%;
+    background:radial-gradient(circle, rgba(231,178,60,.5) 0%, rgba(231,178,60,0) 68%);
+    opacity:0; filter:blur(2px);
+  }
+  #intro .dots{ position:absolute; inset:0; }
+  #intro .dots i{
+    position:absolute; width:3px; height:3px; border-radius:50%;
+    background:var(--gold-light); opacity:0;
+    box-shadow:0 0 6px 1px rgba(255,221,138,.8);
+  }
+  #introFlower{ position:relative; width:min(72vw,420px); height:auto; z-index:2; }
+  .intro-copy{
+    position:absolute; left:50%; bottom:16%; transform:translateX(-50%);
+    width:min(90vw,560px); text-align:center; z-index:3;
+  }
+  .intro-copy p{
+    font-size:clamp(1.3rem,4.6vw,1.9rem); margin:0; opacity:0;
+    letter-spacing:.02em;
+  }
+  .intro-copy .line2{
+    font-family:'Playfair Display', serif; font-style:italic;
+    color:var(--gold-light); margin-top:.6rem;
+  }
+  #enterBtn{
+    position:absolute; left:50%; bottom:6.5%; transform:translateX(-50%);
+    z-index:3; opacity:0; pointer-events:none;
+    font-family:'Cormorant Garamond', serif; font-size:1.15rem; font-weight:600;
+    letter-spacing:.03em; color:var(--black);
+    background:linear-gradient(180deg,var(--gold-light),var(--gold));
+    border:none; border-radius:999px; padding:.85rem 2.2rem; cursor:pointer;
+    box-shadow:0 6px 24px rgba(231,178,60,.35);
+    transition:transform .35s cubic-bezier(.2,1.2,.4,1), box-shadow .35s ease;
+  }
+  #enterBtn:hover{ transform:translateX(-50%) translateY(-3px) scale(1.04); box-shadow:0 12px 34px rgba(231,178,60,.55); }
+  #enterBtn:focus-visible{ outline:2px solid var(--gold-light); outline-offset:4px; }
+  #enterBtn.ready{ pointer-events:auto; }
+  #introFlash{
+    position:fixed; inset:0; z-index:200; background:var(--gold-light);
+    opacity:0; pointer-events:none;
+  }
+
+  /* ---------- estructura general ---------- */
+  main{ position:relative; z-index:2; visibility:hidden; }
+  .scene{
+    position:relative; min-height:100vh; padding:6.5rem 1.4rem;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; overflow:hidden;
+  }
+  .scene .kicker{
+    font-family:'Playfair Display', serif; font-style:italic; color:var(--gold-light);
+    font-size:clamp(1.4rem,4.6vw,1.9rem); margin:0 0 .6rem;
+  }
+  .scene .big{
+    font-size:clamp(2.1rem,7.4vw,3.6rem); line-height:1.18; max-width:16ch; margin:0 auto;
+  }
+  .veil{
+    position:absolute; inset:0; z-index:0; pointer-events:none;
+  }
+
+  /* --- jardín hero --- */
+  #garden{ background:radial-gradient(ellipse at 50% 30%, #22160a 0%, var(--black) 70%); }
+  #garden .veil{ overflow:visible; }
+  #garden svg{ position:absolute; inset:0; width:100%; height:100%; }
+  #garden .headline{ position:relative; z-index:2; }
+  #garden .headline .display{ font-size:clamp(2rem,7vw,3.2rem); }
+  #garden .headline p{ margin-top:.7rem; font-size:clamp(1.05rem,3.6vw,1.3rem); color:#e9d9b6; }
+
+  /* --- mensajes de una línea --- */
+  .lines p{
+    font-size:clamp(1.5rem,5.6vw,2.3rem); max-width:18ch; margin:0 auto 1.6rem;
+    opacity:0; filter:blur(6px); transform:translateY(24px);
+  }
+  .lines p:last-child{ margin-bottom:0; }
+
+  /* --- carta --- */
+  #letter{ background:radial-gradient(ellipse at 50% 20%, #1c130a 0%, var(--black) 65%); }
+  .paper{
+    position:relative; z-index:2; max-width:38rem; width:100%;
+    padding:clamp(2.2rem,6vw,3.4rem) clamp(1.4rem,5vw,3rem);
+    background:linear-gradient(180deg, rgba(247,237,214,.06), rgba(247,237,214,.02));
+    border:1px solid rgba(231,178,60,.22);
+    border-radius:2px;
+    box-shadow:0 30px 80px rgba(0,0,0,.5), inset 0 0 60px rgba(231,178,60,.05);
+  }
+  .paper h2{ font-size:clamp(1.8rem,6vw,2.4rem); color:var(--gold-light); margin-bottom:1.4rem; }
+  .paper p{
+    font-size:clamp(1.15rem,3.8vw,1.35rem); line-height:1.7; text-align:left;
+    margin:0 0 1.15em; opacity:0; filter:blur(5px); transform:translateY(18px);
+  }
+  .paper p:last-child{ margin-bottom:0; }
+
+  /* --- campo WOW --- */
+  #wow{ background:var(--black); padding-top:5rem; }
+  #wow .kicker{ position:relative; z-index:3; }
+  #wowField{ position:relative; width:100%; max-width:980px; height:min(78vh,640px); z-index:2; }
+  #wowField svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+
+  /* --- sección scrub --- */
+  #scrub{ min-height:220vh; padding:0; }
+  #scrub .pin{
+    position:sticky; top:0; height:100vh; width:100%;
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+  }
+  #scrub .pin-bg{
+    position:absolute; inset:0; z-index:0;
+    background:radial-gradient(ellipse at 50% 55%, #26170a 0%, var(--black) 72%);
+  }
+  #scrubFlower{ position:relative; width:min(58vw,320px); z-index:2; }
+  .scrub-copy{ position:absolute; z-index:3; width:min(88vw,520px); text-align:center; }
+  .scrub-copy p{
+    position:absolute; inset:0; margin:0; font-size:clamp(1.4rem,5.4vw,2.1rem);
+    font-family:'Playfair Display', serif; font-style:italic; opacity:0;
+    color:var(--gold-light);
+  }
+
+  /* --- final tranquilo --- */
+  #finalQuiet{ background:var(--black); }
+  #finalFlower{ width:min(46vw,220px); margin-bottom:1.6rem; }
+  .quiet-lines p{
+    font-size:clamp(1.35rem,5vw,2rem); margin:0 0 .5rem; opacity:0;
+  }
+  .quiet-lines .strong{ color:var(--gold-light); font-family:'Playfair Display', serif; font-style:italic; }
+  .quiet-lines .script{ font-size:clamp(2.2rem,8vw,3.4rem); margin-top:.5rem; }
+
+  /* --- cierre --- */
+  #ending{ background:radial-gradient(ellipse at 50% 70%, #22160a 0%, var(--black) 65%); }
+  #endingField{ position:absolute; inset:0; z-index:0; overflow:visible; }
+  #ending .content{ position:relative; z-index:2; }
+  #ending .big{ font-size:clamp(1.9rem,6.6vw,2.8rem); }
+  #ending p.sub{ font-size:clamp(1.15rem,4vw,1.4rem); color:#e9d9b6; margin:.9rem 0 0; }
+  #ending .script{ font-size:clamp(2.4rem,9vw,3.6rem); color:var(--gold-light); margin-top:1rem; }
+
+  /* --- música --- */
+  #musicToggle{
+    position:fixed; right:1rem; bottom:calc(1rem + env(safe-area-inset-bottom,0px)); z-index:50;
+    width:46px; height:46px; border-radius:50%; border:1px solid rgba(231,178,60,.4);
+    background:rgba(11,7,4,.6); backdrop-filter:blur(6px); color:var(--gold-light);
+    font-size:1.15rem; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:transform .25s ease, background .25s ease;
+  }
+  #musicToggle:hover{ transform:scale(1.07); background:rgba(231,178,60,.18); }
+  #musicToggle[aria-pressed="true"]{ background:rgba(231,178,60,.28); }
+
+  @media (max-width:600px){
+    .paper{ padding:1.8rem 1.2rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+  }
+</style>
+</head>
+<body class="locked">
+
+<div id="petalLayer"><canvas id="petalCanvas"></canvas></div>
+
+<!-- ===================== INTRO ===================== -->
+<div id="intro" aria-label="Introducción">
+  <div class="glow" id="introGlow"></div>
+  <div class="dots" id="introDots"></div>
+  <svg id="introFlower" viewBox="0 0 300 320"></svg>
+  <div class="intro-copy">
+    <p id="introLine1">Tengo algo para ti&hellip;</p>
+    <p id="introLine2" class="line2">🌻 Para la niña que amo 🌻</p>
+  </div>
+  <button id="enterBtn" type="button">Entra aquí ❤️</button>
+</div>
+<div id="introFlash"></div>
+
+<button id="musicToggle" aria-pressed="false" aria-label="Activar música" title="Música">♪</button>
+
+<main id="experience">
+
+  <!-- ===================== JARDÍN HERO ===================== -->
+  <section class="scene" id="garden">
+    <div class="veil"><svg id="gardenSvg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMax slice"></svg></div>
+    <div class="headline">
+      <h1 class="display" data-reveal="zoom">Un pequeño jardín,<br>solo para ti</h1>
+      <p data-reveal="up" data-reveal-delay="140">Sigue bajando&hellip; hay algo creciendo aquí abajo.</p>
+    </div>
+  </section>
+
+  <!-- ===================== PRIMER MENSAJE ===================== -->
+  <section class="scene lines" id="msg1">
+    <p data-reveal="blur">Hola, mi amor ❤️</p>
+    <p data-reveal="blur" data-reveal-delay="120">Hoy quería darte algo&hellip;</p>
+    <p data-reveal="blur" data-reveal-delay="240">aunque no pueda hacerlo de la forma tradicional.</p>
+  </section>
+
+  <!-- ===================== CARTA ===================== -->
+  <section class="scene" id="letter">
+    <div class="paper">
+      <h2 data-reveal="up">Para ti</h2>
+      <p>Hola mami, primero me presento aunque ya me conozcas: soy el que te quita la batería social todos los días. Pero quiero decirte que te amo mucho, mi amor.</p>
+      <p>Aunque a veces joda tanto que no quieras hablarme, también quiero decirte que aunque no te pueda dar tus flores presencialmente, te hago esto con todo el corazón.</p>
+      <p>Eres la mujer que amo hoy, amaré mañana y amaré siempre.</p>
+      <p>Te doy estas flores para demostrarte una vez más que no importa qué esté haciendo o dónde esté, siempre voy a estar para ti, mi niña hermosa.</p>
+      <p>Y no sé si alguna vez te dieron flores amarillas; aunque sea a través de un teléfono, le pongo todo mi corazón y espero que te gusten.</p>
+    </div>
+  </section>
+
+  <!-- ===================== CAMPO WOW ===================== -->
+  <section class="scene" id="wow">
+    <h2 class="kicker" id="wowTitle">Y estas son para ti 🌻</h2>
+    <div id="wowField"><svg id="wowSvg" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMax meet"></svg></div>
+  </section>
+
+  <!-- ===================== SCROLL CONTROLADO ===================== -->
+  <section id="scrub">
+    <div class="pin">
+      <div class="pin-bg"></div>
+      <svg id="scrubFlower" viewBox="0 0 260 300"></svg>
+      <div class="scrub-copy">
+        <p id="scrubText1">Cada día que pasa&hellip;</p>
+        <p id="scrubText2">te quiero un poco más.</p>
+        <p id="scrubText3">Y esto apenas está floreciendo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FINAL TRANQUILO ===================== -->
+  <section class="scene" id="finalQuiet">
+    <svg id="finalFlower" viewBox="0 0 220 260"></svg>
+    <div class="quiet-lines">
+      <p id="q1">No importa dónde esté&hellip;</p>
+      <p id="q2" class="strong">&hellip;siempre voy a estar para ti.</p>
+      <p id="q3" class="script">Te amo, mi niña hermosa. ❤️</p>
+    </div>
+  </section>
+
+  <!-- ===================== CIERRE ===================== -->
+  <section class="scene" id="ending">
+    <svg id="endingField" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMax slice"></svg>
+    <div class="content">
+      <p class="big" data-reveal="up">Espero que te hayan gustado tus flores 🌻❤️</p>
+      <p class="sub" data-reveal="up" data-reveal-delay="140">Con todo mi corazón, para ti.</p>
+      <p class="script" data-reveal="up" data-reveal-delay="280">Te amo.</p>
+    </div>
+  </section>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  var NS = 'http://www.w3.org/2000/svg';
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var isMobile = window.innerWidth < 640;
+  gsap.registerPlugin(ScrollTrigger);
+
+  function rand(a,b){ return a + Math.random()*(b-a); }
+  function el(name, attrs, parent){
+    var n = document.createElementNS(NS, name);
+    for(var k in attrs) n.setAttribute(k, attrs[k]);
+    if(parent) parent.appendChild(n);
+    return n;
+  }
+
+  /* ============================================================
+     DEFS COMPARTIDOS (gradientes dorados reutilizados en toda la página)
+  ============================================================ */
+  function sharedDefs(svg){
+    var d = el('defs', {}, svg);
+    function grad(id,type,attrs,stops){
+      var g = el(type, Object.assign({id:id}, attrs), d);
+      stops.forEach(function(st){ el('stop', {offset:st[0], 'stop-color':st[1], 'stop-opacity': st[2]==null?1:st[2]}, g); });
+    }
+    grad('petalOuter','radialGradient',{cx:.5,cy:.7,r:.7},[[0,'#ffe27a'],[1,'#e7a628']]);
+    grad('petalInner','radialGradient',{cx:.5,cy:.7,r:.7},[[0,'#ffcf3f'],[1,'#c9860f']]);
+    grad('petalCore','radialGradient',{cx:.5,cy:.7,r:.7},[[0,'#f5a90d'],[1,'#a9720f']]);
+    grad('centerDisk','radialGradient',{cx:.5,cy:.5,r:.5},[[0,'#7a4a0e'],[1,'#3c2308']]);
+    grad('glowSoft','radialGradient',{cx:.5,cy:.5,r:.5},[[0,'#ffdd8a', .55],[1,'#ffdd8a',0]]);
+    return d;
+  }
+
+  /* ============================================================
+     BLOSSOM: una flor amarilla elegante de pétalos redondeados
+     parent, x, y, scale, opciones {delay, stems:false}
+  ============================================================ */
+  function blossom(parent, x, y, scale, opts){
+    opts = opts || {};
+    var delay = opts.delay || 0;
+    var g = el('g', {transform:'translate('+x+','+y+') scale('+scale+')'}, parent);
+    var wrap = el('g', {}, g);
+
+    var rings = [
+      {n:6, r:46, off:0,  fill:'petalOuter'},
+      {n:6, r:34, off:30, fill:'petalInner'},
+      {n:5, r:22, off:14, fill:'petalCore'}
+    ];
+    rings.forEach(function(rg, ri){
+      var rgG = el('g', {}, wrap);
+      for(var k=0;k<rg.n;k++){
+        var a = rg.off + k*360/rg.n + rand(-4,4);
+        var pg = el('g', {transform:'rotate('+a+')'}, rgG);
+        var rr = rg.r * rand(.94,1.05);
+        el('path', {
+          d:'M0,0 C'+(-rr*.36)+','+(-rr*.32)+' '+(-rr*.32)+','+(-rr*.9)+' 0,'+(-rr)+
+            ' C'+(rr*.32)+','+(-rr*.9)+' '+(rr*.36)+','+(-rr*.32)+' 0,0 Z',
+          fill:'url(#'+rg.fill+')', stroke:'rgba(120,70,0,.28)', 'stroke-width':.8
+        }, pg);
+      }
+      if(reduce){
+        gsap.set(rgG, {transformOrigin:'0px 0px', scale:1, rotation:0, opacity:1});
+      } else {
+        gsap.set(rgG, {transformOrigin:'0px 0px', scale:0, rotation:-50, opacity:0});
+        gsap.to(rgG, {scale:1, rotation:0, opacity:1, duration:1.05, delay:delay+ri*.14, ease:'back.out(1.7)'});
+      }
+    });
+
+    var disk = el('circle', {r:12, fill:'url(#centerDisk)'}, wrap);
+    var diskWrap = el('g', {}, wrap);
+    diskWrap.appendChild(disk);
+    for(var i=1;i<=14;i++){
+      var ang = i*137.5*Math.PI/180, rad = Math.sqrt(i/14)*10;
+      el('circle', {cx:Math.cos(ang)*rad, cy:Math.sin(ang)*rad, r:1, fill:'#e2a53a', opacity:.55}, diskWrap);
+    }
+    if(reduce){ gsap.set(diskWrap,{scale:1}); }
+    else{
+      gsap.set(diskWrap, {transformOrigin:'0px 0px', scale:0});
+      gsap.to(diskWrap, {scale:1, duration:.6, delay:delay+.42, ease:'back.out(2)'});
+    }
+
+    if(!reduce){
+      gsap.to(wrap, {
+        rotation: rand(-2.2,2.2), transformOrigin:'0px 8px',
+        duration: rand(3.2,4.8), delay: delay+1.4, ease:'sine.inOut',
+        yoyo:true, repeat:-1
+      });
+    }
+    return g;
+  }
+
+  function stemPath(parent, x1, y1, x2, y2, ctrlOffset, width, delay){
+    var d = 'M'+x1+','+y1+' Q'+(x1+ctrlOffset)+','+((y1+y2)/2)+' '+x2+','+y2;
+    var p = el('path', {d:d, fill:'none', stroke:'url(#stemGrad)', 'stroke-width':width, 'stroke-linecap':'round'}, parent);
+    if(!p.getAttribute('stroke') ) return p;
+    var L;
+    try{ L = p.getTotalLength(); }catch(e){ L = 200; }
+    if(reduce){ p.removeAttribute('stroke-dasharray'); return p; }
+    p.setAttribute('stroke-dasharray', L);
+    gsap.fromTo(p, {attr:{'stroke-dashoffset':L}}, {attr:{'stroke-dashoffset':0}, duration:1.1, delay:delay, ease:'power2.out'});
+    return p;
+  }
+
+  function ensureStemGrad(svg){
+    if(svg.querySelector('#stemGrad')) return;
+    var d = svg.querySelector('defs') || el('defs',{},svg);
+    var g = el('linearGradient', {id:'stemGrad', x1:0,y1:1,x2:0,y2:0}, d);
+    el('stop', {offset:0, 'stop-color':'#2f6a2c'}, g);
+    el('stop', {offset:1, 'stop-color':'#5fa051'}, g);
+  }
+
+  function leaf(parent, x, y, angle, len, delay){
+    var g = el('g', {transform:'translate('+x+','+y+') rotate('+angle+')'}, parent);
+    var lf = el('g', {}, g);
+    el('path', {d:'M0,0 C'+(len*.2)+',-'+(len*.42)+' '+(len*.7)+',-'+(len*.4)+' '+len+',0 C'+(len*.7)+','+(len*.4)+' '+(len*.2)+','+(len*.42)+' 0,0 Z', fill:'#3d7a37'}, lf);
+    if(reduce){ gsap.set(lf,{scale:1}); }
+    else{
+      gsap.set(lf, {transformOrigin:'0px 0px', scale:0});
+      gsap.to(lf, {scale:1, duration:.8, delay:delay, ease:'back.out(1.8)'});
+    }
+  }
+
+  /* ============================================================
+     1) INTRO
+  ============================================================ */
+  function buildIntroDots(){
+    var box = document.getElementById('introDots');
+    var n = isMobile ? 26 : 46;
+    for(var i=0;i<n;i++){
+      var d = document.createElement('i');
+      d.style.left = rand(4,96)+'%';
+      d.style.top = rand(6,90)+'%';
+      var sz = rand(2,4);
+      d.style.width = d.style.height = sz+'px';
+      box.appendChild(d);
+    }
+  }
+
+  function buildIntroFlower(){
+    var svg = document.getElementById('introFlower');
+    sharedDefs(svg);
+    ensureStemGrad(svg);
+    // pequeñas flores satélite
+    var satellites = [
+      {x:58,y:250,s:.4},{x:242,y:250,s:.42},{x:36,y:300,s:.3},{x:264,y:300,s:.32}
+    ];
+    satellites.forEach(function(sat, i){
+      stemPath(svg, sat.x, 320, sat.x, sat.y+30, rand(-8,8), 3, 0);
+      blossom(svg, sat.x, sat.y, sat.s, {delay: 1.9 + i*.12});
+    });
+    // flor central
+    stemPath(svg, 150, 320, 150, 200, 0, 5, 0);
+    blossom(svg, 150, 165, 1, {delay: 1.35});
+  }
+
+  function playIntro(){
+    var tl = gsap.timeline({defaults:{ease:'power2.out'}});
+    tl.to('#introGlow', {opacity:1, scale:1.06, duration: reduce?.2:2.2, ease:'sine.out'}, 0);
+    if(!reduce){
+      gsap.utils.toArray('#introDots i').forEach(function(d,i){
+        gsap.to(d, {opacity: rand(.4,.95), duration: rand(1.4,2.6), delay: rand(.2,2.2), repeat:-1, yoyo:true, ease:'sine.inOut'});
+        gsap.to(d, {y:'-=18', duration: rand(4,7), delay: rand(0,3), repeat:-1, yoyo:true, ease:'sine.inOut'});
+      });
+    }
+    tl.to('#introLine1', {opacity:1, y:0, filter:'blur(0px)', duration: reduce?.2:1.1}, reduce?0:3.1)
+      .fromTo('#introLine1', {y:16, filter:'blur(10px)'}, {y:0, filter:'blur(0px)', opacity:1, duration: reduce?.2:1.1}, '<')
+      .to('#introLine1', {opacity:0, filter:'blur(8px)', duration:.7}, '+='+(reduce?.1:1.1))
+      .fromTo('#introLine2', {opacity:0, y:16, filter:'blur(10px)', scale:.94}, {opacity:1, y:0, filter:'blur(0px)', scale:1, duration: reduce?.2:1.1}, reduce? '<' : '-=.1')
+      .to('#enterBtn', {opacity:1, duration:.7, onComplete:function(){
+          document.getElementById('enterBtn').classList.add('ready');
+        }}, '+='+(reduce?0:.5));
+  }
+
+  function enterExperience(){
+    var btn = document.getElementById('enterBtn');
+    btn.classList.remove('ready');
+    var tl = gsap.timeline({onComplete:function(){
+      document.getElementById('intro').style.display='none';
+      document.body.classList.remove('locked');
+      document.getElementById('experience').style.visibility='visible';
+      ScrollTrigger.refresh();
+    }});
+    tl.to('#introFlash', {opacity:1, duration:.35, ease:'power1.in'})
+      .to('#introFlower', {scale:1.5, opacity:0, duration:.6, ease:'power2.in'}, '<')
+      .to('#intro .intro-copy, #enterBtn', {opacity:0, duration:.3}, '<')
+      .to('#introFlash', {opacity:0, duration:.6, ease:'power1.out'}, '+=.05');
+  }
+
+  buildIntroDots();
+  buildIntroFlower();
+  playIntro();
+  document.getElementById('enterBtn').addEventListener('click', enterExperience);
+
+  /* ============================================================
+     2) PÉTALOS CAYENDO (canvas, con profundidad/blur/velocidad variables)
+  ============================================================ */
+  (function(){
+    var canvas = document.getElementById('petalCanvas');
+    var ctx = canvas.getContext('2d');
+    var W,H,dpr;
+    var petals = [];
+    var count = reduce ? 0 : (isMobile ? 16 : 34);
+
+    function resize(){
+      dpr = Math.min(window.devicePixelRatio||1, 2);
+      W = window.innerWidth; H = window.innerHeight;
+      canvas.width = W*dpr; canvas.height = H*dpr;
+      canvas.style.width = W+'px'; canvas.style.height = H+'px';
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+    }
+    function makePetal(initial){
+      var layer = Math.floor(rand(0,3)); // 0 lejos, 1 medio, 2 cerca
+      return {
+        x: rand(0,W), y: initial ? rand(-H,H) : -20,
+        size: layer===0 ? rand(5,8) : layer===1 ? rand(8,12) : rand(12,17),
+        speed: layer===0 ? rand(10,18) : layer===1 ? rand(18,28) : rand(28,42),
+        drift: rand(-14,14),
+        driftPhase: rand(0,Math.PI*2),
+        driftFreq: rand(.4,.9),
+        rot: rand(0,360),
+        rotSpeed: rand(-40,40),
+        layer: layer,
+        hue: Math.random()<.5 ? '#ffdd8a' : '#e7b23c'
+      };
+    }
+    function init(){
+      resize();
+      petals = [];
+      for(var i=0;i<count;i++) petals.push(makePetal(true));
+    }
+    var last = performance.now();
+    function drawPetal(p){
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.globalAlpha = p.layer===0 ? .35 : p.layer===1 ? .6 : .85;
+      if(p.layer===0) ctx.filter = 'blur(2.5px)';
+      else if(p.layer===1) ctx.filter = 'blur(.8px)';
+      else ctx.filter = 'none';
+      ctx.fillStyle = p.hue;
+      ctx.beginPath();
+      ctx.moveTo(0, -p.size);
+      ctx.bezierCurveTo(p.size*.7, -p.size*.5, p.size*.7, p.size*.4, 0, p.size);
+      ctx.bezierCurveTo(-p.size*.7, p.size*.4, -p.size*.7, -p.size*.5, 0, -p.size);
+      ctx.fill();
+      ctx.restore();
+    }
+    function tick(now){
+      var dt = Math.min(.05, (now-last)/1000); last = now;
+      ctx.clearRect(0,0,W,H);
+      for(var i=0;i<petals.length;i++){
+        var p = petals[i];
+        p.y += p.speed*dt;
+        p.driftPhase += p.driftFreq*dt;
+        p.x += Math.sin(p.driftPhase)*p.drift*dt;
+        p.rot += p.rotSpeed*dt;
+        if(p.y > H+20){ Object.assign(p, makePetal(false)); }
+        drawPetal(p);
+      }
+      requestAnimationFrame(tick);
+    }
+    init();
+    window.addEventListener('resize', function(){
+      resize();
+      isMobile = window.innerWidth < 640;
+    });
+    if(!reduce) requestAnimationFrame(tick);
+  })();
+
+  /* ============================================================
+     3) JARDÍN HERO (varias flores con profundidad + parallax suave)
+  ============================================================ */
+  (function(){
+    var svg = document.getElementById('gardenSvg');
+    sharedDefs(svg); ensureStemGrad(svg);
+    var layers = [
+      {n:3, y:560, scale:.55, blur:3, stemW:4},
+      {n:4, y:600, scale:.85, blur:1, stemW:5.5},
+      {n:2, y:640, scale:1.15, blur:0, stemW:7}
+    ];
+    var groups = [];
+    layers.forEach(function(layer, li){
+      var g = el('g', {filter: layer.blur ? undefined : undefined, opacity:0}, svg);
+      if(layer.blur) g.style.filter = 'blur('+layer.blur+'px)';
+      var slot = 1000/layer.n;
+      for(var i=0;i<layer.n;i++){
+        var x = (i+.5)*slot + rand(-slot*.2, slot*.2);
+        stemPath(g, x, 700, x, layer.y, rand(-30,30), layer.stemW, .2+li*.15+i*.08);
+        leaf(g, x, layer.y+60, rand(20,50), 40*layer.scale, .5+li*.15+i*.08);
+        leaf(g, x, layer.y+90, -rand(20,50), 38*layer.scale, .6+li*.15+i*.08);
+        blossom(g, x, layer.y-10, layer.scale*.7, {delay:.7+li*.2+i*.1});
+      }
+      groups.push(g);
+      gsap.to(g, {opacity:1, duration:1.2, delay:li*.15});
+    });
+
+    ScrollTrigger.create({
+      trigger:'#garden', start:'top bottom', end:'bottom top',
+      onUpdate: function(self){
+        if(reduce) return;
+        groups.forEach(function(g,i){
+          gsap.set(g, {y: self.progress * (24 - i*8)});
+        });
+      }
+    });
+    if(!reduce){
+      window.addEventListener('mousemove', function(e){
+        var mx = (e.clientX/window.innerWidth - .5);
+        groups.forEach(function(g,i){
+          gsap.to(g, {x: mx * (14 - i*4), duration:.6, ease:'power1.out'});
+        });
+      });
+    }
+  })();
+
+  /* ============================================================
+     4) REVEALS GENÉRICOS (data-reveal) al hacer scroll
+  ============================================================ */
+  gsap.utils.toArray('[data-reveal]').forEach(function(target){
+    var type = target.getAttribute('data-reveal');
+    var delay = (parseInt(target.getAttribute('data-reveal-delay')||'0',10))/1000;
+    var from = {opacity:0};
+    if(type==='up') Object.assign(from, {y:34});
+    if(type==='blur') Object.assign(from, {y:24, filter:'blur(9px)'});
+    if(type==='zoom') Object.assign(from, {scale:.86});
+    if(type==='side-l') Object.assign(from, {x:-50});
+    if(type==='side-r') Object.assign(from, {x:50});
+    if(reduce){ gsap.set(target, {opacity:1, y:0, x:0, scale:1, filter:'blur(0px)'}); return; }
+    gsap.set(target, from);
+    gsap.to(target, {
+      opacity:1, y:0, x:0, scale:1, filter:'blur(0px)', duration:1, delay:delay, ease:'power2.out',
+      scrollTrigger:{ trigger:target, start:'top 82%', toggleActions:'play none none reverse' }
+    });
+  });
+
+  /* ============================================================
+     5) PRIMER MENSAJE (líneas con blur)
+  ============================================================ */
+  gsap.utils.toArray('.lines p').forEach(function(p){
+    if(reduce){ gsap.set(p,{opacity:1, y:0, filter:'blur(0px)'}); return; }
+    gsap.to(p, {
+      opacity:1, y:0, filter:'blur(0px)', duration:1, ease:'power2.out',
+      scrollTrigger:{ trigger:p, start:'top 80%', toggleActions:'play none none reverse' }
+    });
+  });
+
+  /* ============================================================
+     6) CARTA — cada párrafo con su propia entrada + partículas
+  ============================================================ */
+  gsap.utils.toArray('.paper p').forEach(function(p, i){
+    if(reduce){ gsap.set(p,{opacity:1, y:0, filter:'blur(0px)'}); return; }
+    gsap.to(p, {
+      opacity:1, y:0, filter:'blur(0px)', duration:1.1, ease:'power2.out',
+      scrollTrigger:{
+        trigger:p, start:'top 84%', toggleActions:'play none none reverse',
+        onEnter:function(){ sparkAround(p); }
+      }
+    });
+  });
+  function sparkAround(node){
+    if(reduce) return;
+    var rect = node.getBoundingClientRect();
+    for(var i=0;i<7;i++){
+      var s = document.createElement('div');
+      s.style.cssText = 'position:fixed;z-index:60;width:3px;height:3px;border-radius:50%;background:#ffdd8a;box-shadow:0 0 7px 2px rgba(255,221,138,.8);pointer-events:none;';
+      var x = rect.left + rand(0, rect.width), y = rect.top + rand(0, rect.height);
+      s.style.left = x+'px'; s.style.top = y+'px';
+      document.body.appendChild(s);
+      gsap.fromTo(s, {opacity:0, scale:0}, {
+        opacity:1, scale:1.6, duration:.5, ease:'power1.out',
+        onComplete:function(){
+          gsap.to(s, {opacity:0, y:-18, duration:.7, delay:.1, onComplete:function(){ s.remove(); }});
+        }
+      });
+    }
+  }
+
+  /* ============================================================
+     7) CAMPO WOW — el gran momento
+  ============================================================ */
+  (function(){
+    var svg = document.getElementById('wowSvg');
+    sharedDefs(svg); ensureStemGrad(svg);
+    var n = isMobile ? 9 : 14;
+    var slot = 1000/n;
+    var built = false;
+
+    function build(){
+      if(built) return; built = true;
+      var glow = el('circle', {cx:500, cy:260, r:340, fill:'url(#glowSoft)', opacity:0}, svg);
+      gsap.to(glow, {opacity:1, duration:2});
+
+      for(var i=0;i<n;i++){
+        (function(i){
+          var x = (i+.5)*slot + rand(-slot*.22, slot*.22);
+          var h = rand(200, 420);
+          var sc = rand(.62, 1.05);
+          var delay = i*.09 + rand(0,.1);
+          var topY = 620 - h;
+          leaf(svg, x, 620-h*.45, rand(20,45), 34*sc, delay+.55);
+          leaf(svg, x, 620-h*.65, -rand(20,45), 32*sc, delay+.65);
+          stemPath(svg, x, 620, x, topY, rand(-24,24), 5*sc+2, delay);
+          blossom(svg, x, topY-6, sc, {delay: delay+.85});
+        })(i);
+      }
+    }
+    ScrollTrigger.create({ trigger:'#wow', start:'top 65%', onEnter:build, once:true });
+
+    if(!reduce){
+      gsap.fromTo('#wowTitle', {opacity:0, letterSpacing:'.5em', filter:'blur(10px)'}, {
+        opacity:1, letterSpacing:'.02em', filter:'blur(0px)', duration:1.4,
+        scrollTrigger:{ trigger:'#wow', start:'top 70%', toggleActions:'play none none reverse' }
+      });
+    } else {
+      gsap.set('#wowTitle', {opacity:1});
+    }
+  })();
+
+  /* ============================================================
+     8) SECCIÓN CON SCROLL-SCRUB
+  ============================================================ */
+  (function(){
+    var svg = document.getElementById('scrubFlower');
+    sharedDefs(svg); ensureStemGrad(svg);
+    stemPath(svg, 130, 300, 130, 150, 0, 6, 0);
+    var flowerG = blossom(svg, 130, 118, 1, {delay:.1});
+    gsap.set(flowerG, {transformOrigin:'130px 118px'});
+
+    var texts = ['#scrubText1', '#scrubText2', '#scrubText3'];
+    gsap.set(texts, {opacity:0, y:14});
+    gsap.set(texts[0], {opacity:1, y:0});
+
+    ScrollTrigger.create({
+      trigger:'#scrub', start:'top top', end:'bottom bottom', scrub: reduce?false:.4,
+      onUpdate:function(self){
+        var p = self.progress;
+        var scale = .55 + p*1.05;
+        gsap.set(flowerG, {scale:scale});
+        gsap.set('.pin-bg', {opacity: .5 + p*.5});
+        var seg = p<.36 ? 0 : p<.7 ? 1 : 2;
+        texts.forEach(function(sel, i){
+          gsap.to(sel, {opacity: i===seg?1:0, y: i===seg?0:14, duration:.4, overwrite:'auto'});
+        });
+      }
+    });
+  })();
+
+  /* ============================================================
+     9) FINAL TRANQUILO
+  ============================================================ */
+  (function(){
+    var svg = document.getElementById('finalFlower');
+    sharedDefs(svg); ensureStemGrad(svg);
+    stemPath(svg, 110, 260, 110, 140, 0, 6, 0);
+    blossom(svg, 110, 108, 1.1, {delay:.15});
+
+    var tl = gsap.timeline({
+      scrollTrigger:{ trigger:'#finalQuiet', start:'top 55%', toggleActions:'play none none reverse' }
+    });
+    tl.to('#q1', {opacity:1, duration: reduce?.2:1.1})
+      .to('#q1', {opacity:.35, duration:.6}, '+='+(reduce?.1:1.1))
+      .to('#q2', {opacity:1, duration: reduce?.2:1.1}, '-='+(reduce?0:.1))
+      .to('#q2', {opacity:.35, duration:.6}, '+='+(reduce?.1:1.1))
+      .fromTo('#q3', {opacity:0, scale:.9}, {opacity:1, scale:1, duration: reduce?.2:1.3, ease:'back.out(1.6)'});
+  })();
+
+  /* ============================================================
+     10) CIERRE — flores alrededor + líneas finales
+  ============================================================ */
+  (function(){
+    var svg = document.getElementById('endingField');
+    sharedDefs(svg); ensureStemGrad(svg);
+    var n = isMobile ? 7 : 11;
+    var slot = 1000/n;
+    var built = false;
+    function build(){
+      if(built) return; built = true;
+      for(var i=0;i<n;i++){
+        var x = (i+.5)*slot + rand(-slot*.2, slot*.2);
+        var h = rand(140, 300);
+        var sc = rand(.4, .75);
+        var topY = 700 - h;
+        stemPath(svg, x, 700, x, topY, rand(-16,16), 3.5*sc+1.5, i*.08);
+        blossom(svg, x, topY-4, sc, {delay: i*.08+.6});
+      }
+    }
+    ScrollTrigger.create({ trigger:'#ending', start:'top 70%', onEnter:build, once:true });
+  })();
+
+  /* ============================================================
+     11) MÚSICA (sintetizada, sin autoplay — pausada al abrir)
+  ============================================================ */
+  (function(){
+    var btn = document.getElementById('musicToggle');
+    var ctx=null, gain=null, osc1=null, osc2=null, lfo=null, lfoGain=null, playing=false;
+    function ensure(){
+      if(ctx) return;
+      var AC = window.AudioContext || window.webkitAudioContext;
+      ctx = new AC();
+      gain = ctx.createGain(); gain.gain.value = 0;
+      gain.connect(ctx.destination);
+      osc1 = ctx.createOscillator(); osc1.type='sine'; osc1.frequency.value = 220;
+      osc2 = ctx.createOscillator(); osc2.type='sine'; osc2.frequency.value = 277.18;
+      var filt = ctx.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=900;
+      lfo = ctx.createOscillator(); lfo.frequency.value = .06;
+      lfoGain = ctx.createGain(); lfoGain.gain.value = 300;
+      lfo.connect(lfoGain); lfoGain.connect(filt.frequency);
+      osc1.connect(filt); osc2.connect(filt); filt.connect(gain);
+      osc1.start(); osc2.start(); lfo.start();
+    }
+    btn.addEventListener('click', function(){
+      ensure();
+      if(ctx.state==='suspended') ctx.resume();
+      playing = !playing;
+      btn.setAttribute('aria-pressed', String(playing));
+      btn.textContent = playing ? '♫' : '♪';
+      gain.gain.cancelScheduledValues(ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(playing? .05:0, ctx.currentTime+1.2);
+    });
+  })();
+
+})();
+</script>
+</body>
+</html>
